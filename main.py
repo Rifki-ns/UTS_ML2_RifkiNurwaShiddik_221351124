@@ -1,33 +1,34 @@
-import pandas as pd
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.model_selection import train_test_split
+import streamlit as st
 import joblib
+import pandas as pd
+import numpy as np
 
-# Load dataset
-df = pd.read_csv("sports-car-prices-dataset/Sport car price.csv")
+# Load the trained model
+try:
+    model = joblib.load('sports_car_price_predictor.pkl')
+except FileNotFoundError:
+    st.error("Model file not found. Please upload 'sports_car_price_predictor.pkl'.")
+    st.stop()
 
-# Pastikan semua nama kolom sesuai dengan dataset
-# Contoh: 'Car_Make_370Z' adalah dummy variable hasil one-hot encoding
-# Jika belum ada, kamu harus melakukan encoding terlebih dahulu
-# Berikut adalah contoh encoding:
-if 'Car_Make' in df.columns:
-    df = pd.get_dummies(df, columns=['Car_Make'], drop_first=True)
 
-# Periksa kolom-kolom yang tersedia
-print("Available columns:", df.columns)
+# Create the Streamlit app
+st.title("Sports Car Price Predictor")
 
-# Pilih fitur (ganti nama sesuai kolom yang tersedia)
-X = df[['horsepower', 'engine_size', 'year', 'Car_Make_370Z']]  # pastikan 'Car_Make_370Z' benar
-y = df['price']  # Sesuaikan jika kolom target-nya punya nama lain
+# Input features (replace with your actual features)
+# Example:
+horsepower = st.number_input("Horsepower", min_value=0)
+engine_size = st.number_input("Engine Size (L)", min_value=0.0)
+year = st.number_input("Year", min_value=1900, max_value=2100, step=1)
 
-# Bagi data menjadi training dan testing
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Buat dan latih model
-model = RandomForestRegressor(n_estimators=1000, random_state=42)
-model.fit(X_train, y_train)
+# Create a sample input array based on user inputs
+# Replace with your actual feature engineering
+sample_input = np.array([[horsepower, engine_size, year]])
 
-# Simpan model ke file
-joblib.dump(model, 'sports_car_price_predictor.pkl')
-
-print("✅ Model berhasil dilatih ulang dan disimpan sebagai 'sports_car_price_predictor.pkl'")
+# Make a prediction
+if st.button("Predict Price"):
+    try:
+        simulated_price = model.predict(sample_input)
+        st.success(f"Predicted Price: ${simulated_price[0]:,.2f}")
+    except Exception as e:
+        st.error(f"An error occurred during prediction: {e}")
