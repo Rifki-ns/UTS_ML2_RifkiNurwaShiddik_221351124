@@ -7,28 +7,31 @@ import numpy as np
 try:
     model = joblib.load('sports_car_price_predictor.pkl')
 except FileNotFoundError:
-    st.error("Model file not found. Please upload 'sports_car_price_predictor.pkl'.")
+    st.error("Model file not found. Please upload the 'sports_car_price_predictor.pkl' file.")
     st.stop()
 
 
-# Create the Streamlit app
+# Create input fields for user input (example features)
 st.title("Sports Car Price Predictor")
 
-# Input features (replace with your actual features)
-# Example:
-horsepower = st.number_input("Horsepower", min_value=0)
-engine_size = st.number_input("Engine Size (L)", min_value=0.0)
-year = st.number_input("Year", min_value=1900, max_value=2100, step=1)
 
+# Example: Assuming you need these features as input
+# Replace with actual feature names and appropriate input widgets
+try:
+    horsepower = st.number_input("Horsepower", min_value=0)
+    engine_size = st.number_input("Engine Size (L)", min_value=0.0)
+    year = st.number_input("Year", min_value=1900, max_value=2024)
+    # ... other input fields for your features
+    
+    # Create input array for prediction
+    input_data = np.array([[horsepower, engine_size, year ]]) # ... other features])
 
-# Create a sample input array based on user inputs
-# Replace with your actual feature engineering
-sample_input = np.array([[horsepower, engine_size, year]])
-
-# Make a prediction
-if st.button("Predict Price"):
-    try:
-        simulated_price = model.predict(sample_input)
-        st.success(f"Predicted Price: ${simulated_price[0]:,.2f}")
-    except Exception as e:
-        st.error(f"An error occurred during prediction: {e}")
+    # Make prediction
+    if st.button("Predict Price"):
+        try:
+            predicted_price = model.predict(input_data)[0]  
+            st.success(f"Predicted Price: ${predicted_price:.2f}")
+        except ValueError as e:  # Catching potential errors during prediction
+            st.error(f"Error during prediction: {e}")
+except Exception as e:
+    st.error(f"An error occurred: {e}")
