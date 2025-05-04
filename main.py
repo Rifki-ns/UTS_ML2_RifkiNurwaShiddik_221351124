@@ -2,7 +2,8 @@ import streamlit as st
 import pickle
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import StandardScaler
+import StandardScaler
+from sklearn.preprocessing 
 
 # Load model dan scaler
 filename = 'sports_car_price_model.sav'
